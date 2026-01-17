@@ -1,0 +1,25 @@
+{
+  "name": "tcp-chat-cli",
+  "version": "0.0.1",
+  "description": "A CLI application for TCP chat server and client",
+  "type": "module",
+  "bin": {
+    "tcp-server": "./bin/tcps.js",
+    "tcp-client": "./bin/tcpc.js"
+  },
+  "scripts": {
+    "start:server": "node ./bin/tcps.js",
+    "start:client": "node ./bin/tcpc.js"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "tcp",
+    "chat",
+    "cli",
+    "server",
+    "client"
+  ],
+  "author": "karan",
+  "license": "MIT"
+}
