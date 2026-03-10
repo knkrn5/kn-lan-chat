@@ -8,8 +8,8 @@
     "tcp-client": "./bin/tcpc.js"
   },
   "scripts": {
-    "start:server": "node ./bin/tcps.js",
-    "start:client": "node ./bin/tcpc.js"
+    "tcp-server": "node ./bin/tcps.js",
+    "tcp-client": "node ./bin/tcpc.js"
   },
   "dependencies": {},
   "devDependencies": {},

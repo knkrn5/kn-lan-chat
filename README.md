@@ -1,12 +1,38 @@
 # TCP Chat CLI
 
-A command-line interface for TCP chat server and client applications.
+A modular command-line interface for TCP chat server and client applications.
+
+## 📁 Project Structure
+
+```
+tcp-chat-cli/
+├── bin/
+│   ├── tcps.js                 # Server CLI entry point
+│   └── tcpc.js                 # Client CLI entry point
+├── src/
+│   ├── server/
+│   │   ├── index.js            # Main server logic
+│   │   ├── clientManager.js    # Client connection management
+│   │   ├── banManager.js       # Ban list management
+│   │   ├── commandHandler.js   # Server command handling
+│   │   └── protocol.js         # Message protocol handling
+│   ├── client/
+│   │   ├── index.js            # Main client logic
+│   │   ├── connection.js       # Server connection handling
+│   │   ├── messageHandler.js   # Incoming message handling
+│   │   └── inputHandler.js     # User input handling
+│   └── shared/
+│       ├── utils.js            # Shared utility functions
+│       └── config.js           # Configuration parsing
+├── package.json
+└── README.md
+```
 
 ## Installation
 
 ### Option 1: Install globally from the project directory
 ```bash
-npm install -g .
+npm link
 ```
 
 After installation, you can use the commands from anywhere:
