@@ -8,8 +8,8 @@
     "tcp-client": "./bin/tcpc.js"
   },
   "scripts": {
-    "server": "node ./src/server/tcps.js",
-    "client": "node ./src/client/tcpc.js",
+    "server": "tsx ./src/server/tcps.js",
+    "client": "tsx ./src/client/tcpc.js",
     "build": "tsc"
   },
   "devDependencies": {

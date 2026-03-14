@@ -1,7 +1,15 @@
-import { strgen } from '../shared/utils.js';
+import { strgen } from "../shared/utils.js";
+import type { Socket } from "node:net";
+
+type ClientSocket = Socket & {
+  clientName: string;
+};
 
 export class ClientManager {
-  constructor(serverName) {
+  private serverName: string;
+  private clientList: ClientSocket[];
+
+  constructor(serverName: string) {
     this.serverName = serverName;
     this.clientList = [];
   }
@@ -27,7 +35,7 @@ export class ClientManager {
 
   isNameTaken(clientName, excludeSocket = null) {
     return this.clientList.some(
-      socket => socket.clientName === clientName && socket !== excludeSocket
+      (socket) => socket.clientName === clientName && socket !== excludeSocket,
     );
   }
 
@@ -46,13 +54,17 @@ export class ClientManager {
       console.log(`📤 Message sent to ${clientName}: ${message.trim()}`);
       return true;
     } else {
-      console.log(`❌ ${clientName} This client Name does not exist on this server.`);
+      console.log(
+        `❌ ${clientName} This client Name does not exist on this server.`,
+      );
       return false;
     }
   }
 
   showAllClients() {
-    console.log(`\n👥 List of all Clients connected to ${this.serverName} TCP server:`);
+    console.log(
+      `\n👥 List of all Clients connected to ${this.serverName} TCP server:`,
+    );
     if (this.clientList.length === 0) {
       console.log("No clients connected.");
     } else {
@@ -66,19 +78,21 @@ export class ClientManager {
 
   handleClientNameSet(socket, requestedName) {
     let clientName = requestedName;
-    
-    if (clientName === "null" || !clientName) {
+
+    if (clientName === "null" || !clientName || clientName === "undefined") {
       clientName = strgen();
     }
 
     if (this.isNameTaken(clientName, socket)) {
-      socket.write(`❌ Username '${clientName}' already exists. Please choose a different name.\n`);
+      socket.write(
+        `❌ Username '${clientName}' already exists. Please choose a different name.\n`,
+      );
       return false;
     }
 
     socket.clientName = clientName;
     socket.write(
-      `✅ ${clientName} Welcome to the ${this.serverName} TCP server!\nType -h or -help to see list of all commands.\n`
+      `✅ ${clientName} Welcome to the ${this.serverName} TCP server!\nType -h or -help to see list of all commands.\n`,
     );
     this.broadcast(`👋 New client joined: ${clientName}\n`, socket);
     return true;
@@ -87,7 +101,7 @@ export class ClientManager {
   sendClientList(socket) {
     socket.write(`-cl 👥 Connected clients:\n`);
     this.clientList.forEach((s, i) => {
-      const clientName = s.clientName || 'Unknown';
+      const clientName = s.clientName || "Unknown";
       socket.write(`-cl ${i}. ${clientName}\n`);
     });
     socket.write(`-cl Total Clients: ${this.clientList.length}\n`);

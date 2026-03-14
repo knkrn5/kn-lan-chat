@@ -1,5 +1,7 @@
 //** server socket.on('data') handler for processing client messages
 export class ProtocolHandler {
+  private clientManager;
+
   constructor(clientManager) {
     this.clientManager = clientManager;
   }

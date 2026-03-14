@@ -2,6 +2,11 @@
 import { repeatedPrompt } from '../shared/utils.js';
 
 export class InputHandler {
+
+
+  socket;
+  private recipientName: string | null = null;
+
   constructor(socket) {
     this.socket = socket;
     this.recipientName = null;

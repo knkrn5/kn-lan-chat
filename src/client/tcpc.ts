@@ -33,19 +33,19 @@ export function startClient() {
   });
 
   socket.on("error", (err) => {
-    if (err.code === "ECONNREFUSED") {
+    if ((err as NodeJS.ErrnoException).code === "ECONNREFUSED") {
       console.error(
         "❌ Connection refused by the server. Is the server running?",
       );
       return;
     }
-    if (err.code === "ETIMEDOUT") {
+    if ((err as NodeJS.ErrnoException).code === "ETIMEDOUT") {
       console.error(
         "❌ Connection timed out. The IP address or port number might be wrong.",
       );
       process.exit(0);
     }
-    if (err.code === "ECONNRESET") {
+    if ((err as NodeJS.ErrnoException).code === "ECONNRESET") {
       console.error("❌ Connection was reset by the server.");
       return;
     }
@@ -57,6 +57,5 @@ export function startClient() {
     process.exit(0);
   });
 }
-
 
 startClient();

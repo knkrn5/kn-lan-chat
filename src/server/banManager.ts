@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 
 export class BanManager {
+  private banList: string[];
+
   constructor() {
     this.banList = [];
   }
@@ -24,23 +26,28 @@ export class BanManager {
 
   async banClient(socket, clientList) {
     if (!socket) return false;
-    
+
     this.banList.push(socket.remoteAddress);
     try {
       await writeFile("banlist.txt", `${socket.remoteAddress}, `, {
         flag: "a",
       });
-      
+
       const clientIndex = clientList.indexOf(socket);
       if (clientIndex !== -1) {
         clientList.splice(clientIndex, 1);
       }
-      
+
       socket.end("🚫 You are banned from this server.");
-      console.log(`🔨 Client ${socket.clientName} has been banned and disconnected.`);
+      console.log(
+        `🔨 Client ${socket.clientName} has been banned and disconnected.`,
+      );
       return true;
-    } catch (error) {
-      console.error("❌ Error writing to banlist file:", error.message);
+    } catch (error: any) {
+      console.error(
+        "❌ Error writing to banlist file:",
+        (error as Error).message,
+      );
       return false;
     }
   }
@@ -53,11 +60,16 @@ export class BanManager {
       });
       console.log("📋 Ban List:");
       console.log(banListFile || "No banned IPs found.");
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === "ENOENT") {
-        console.log("📋 Ban List: No banlist.txt file found (no banned users).");
+        console.log(
+          "📋 Ban List: No banlist.txt file found (no banned users).",
+        );
       } else {
-        console.error("❌ Error accessing banlist file:", error.message);
+        console.error(
+          "❌ Error accessing banlist file:",
+          (error as Error).message,
+        );
       }
     }
   }
@@ -69,8 +81,11 @@ export class BanManager {
       });
       this.banList = [];
       console.log("✅ Banlist cleared.");
-    } catch (error) {
-      console.error("❌ Error clearing banlist file:", error.message);
+    } catch (error: any) {
+      console.error(
+        "❌ Error clearing banlist file:",
+        (error as Error).message,
+      );
     }
   }
 }

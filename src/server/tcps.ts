@@ -19,8 +19,6 @@ export function startServer() {
   process.stdin.on("data", (data) => {
     if (commandHandler.isAwaiting()) return;
 
-    console.log("runngin server cmd")
-
     const input = data.toString().trim();
     commandHandler.handleCommand(input);
   });
@@ -43,7 +41,7 @@ export function startServer() {
     });
 
     socket.on("error", (err) => {
-      if (err.code === "ECONNRESET") {
+      if ((err as NodeJS.ErrnoException).code === "ECONNRESET") {
         console.error(`🔌 Connection was reset by client: ${clientAddress}`);
         return;
       }
@@ -71,11 +69,11 @@ export function startServer() {
   });
 
   tcpServer.on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
+    if ((err as NodeJS.ErrnoException).code === "EADDRINUSE") {
       console.error(
         `❌ Port ${serverPort} is already in use. Please choose a different port.`,
       );
-    } else if (err.code === "EACCES") {
+    } else if ((err as NodeJS.ErrnoException).code === "EACCES") {
       console.error(`❌ Permission denied. Cannot bind to port ${serverPort}.`);
     } else {
       console.error(`❌ Server error: ${err.message}`);
@@ -83,6 +81,5 @@ export function startServer() {
     process.exit(1);
   });
 }
-
 
 startServer();
