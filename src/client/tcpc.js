@@ -57,3 +57,6 @@ export function startClient() {
     process.exit(0);
   });
 }
+
+
+startClient();

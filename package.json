@@ -8,11 +8,14 @@
     "tcp-client": "./bin/tcpc.js"
   },
   "scripts": {
-    "tcp-server": "node ./bin/tcps.js",
-    "tcp-client": "node ./bin/tcpc.js"
+    "server": "node ./src/server/tcps.js",
+    "client": "node ./src/client/tcpc.js",
+    "build": "tsc"
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0"
+  },
   "keywords": [
     "tcp",
     "chat",
