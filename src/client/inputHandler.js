@@ -1,3 +1,4 @@
+//** client's process.stdin handler */
 import { repeatedPrompt } from '../shared/utils.js';
 
 export class InputHandler {
@@ -6,7 +7,7 @@ export class InputHandler {
     this.recipientName = null;
   }
 
-  handleUserInput(data) {
+  handleClientInput(data) {
     const dataStr = data.toString().trim();
     const dataArr = dataStr.split(" ").filter(Boolean);
 
@@ -94,7 +95,7 @@ exit                    Disconnect from server
   }
 
   setupInputHandling() {
-    process.stdin.on("data", (data) => this.handleUserInput(data));
+    process.stdin.on("data", (data) => this.handleClientInput(data));
 
     // Handle Ctrl+C gracefully
     process.on("SIGINT", () => {

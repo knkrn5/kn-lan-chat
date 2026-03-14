@@ -1,3 +1,4 @@
+//** client socket.on('data') handler for processing server messages
 export class MessageHandler {
   handleServerMessage(data) {
     const dataStr = data.toString().trim();

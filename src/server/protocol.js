@@ -1,22 +1,23 @@
+//** server socket.on('data') handler for processing client messages
 export class ProtocolHandler {
   constructor(clientManager) {
     this.clientManager = clientManager;
   }
 
-  handleClientData(socket, data) {
+  handleClientMessage(socket, data) {
     const dataStr = data.toString().trim();
     const dataArr = dataStr.split(" ").filter(Boolean);
 
-    console.log(`💬 ${socket.clientName || 'Unknown'}-> ${dataStr}`);
+    console.log(`💬 ${socket.clientName || "Unknown"}-> ${dataStr}`);
 
-    // Set client name
+    // Change client name
     if (dataArr[0] === "-ccn") {
       const requestedName = dataArr[1];
       this.clientManager.handleClientNameSet(socket, requestedName);
       return;
     }
 
-    // Send message to client by number
+    // Send message to specific client by number
     if (dataArr[0] === "-cnum") {
       const usernumber = parseInt(dataArr[1], 10);
       const message = dataArr.slice(2).join(" ");
@@ -39,7 +40,7 @@ export class ProtocolHandler {
       return;
     }
 
-    // Send message to client by name
+    // Send message to specific client by name
     if (dataArr[0] === "-cname") {
       const clientName = dataArr[1]?.trim();
       const msg = dataArr.slice(2).join(" ");
@@ -58,7 +59,7 @@ export class ProtocolHandler {
         targetSocket.write(`-cname ${socket.clientName} ${msg.trim()}\n`);
       } else {
         socket.write(
-          `❌ ${clientName} - This client does not exist. Type -cl to see list of all clients.\n`
+          `❌ ${clientName} - This client does not exist. Type -cl to see list of all clients.\n`,
         );
       }
       return;
@@ -86,7 +87,9 @@ export class ProtocolHandler {
 
       this.clientManager.getClientList().forEach((s) => {
         if (s !== socket) {
-          s.write(`-bc 📢 ${socket.clientName} broadcasted: ${clientsBroadcastMsg}\n`);
+          s.write(
+            `-bc 📢 ${socket.clientName} broadcasted: ${clientsBroadcastMsg}\n`,
+          );
         }
       });
       socket.write("✅ Message broadcasted to all clients.\n");
@@ -112,7 +115,9 @@ exit                    Disconnect from the server
     // Exit
     if (dataStr === "exit") {
       const clientAddress = `${socket.remoteAddress}:${socket.remotePort}`;
-      console.log(`👋 Client ${socket.clientName || clientAddress} disconnected.`);
+      console.log(
+        `👋 Client ${socket.clientName || clientAddress} disconnected.`,
+      );
       socket.end();
       return;
     }

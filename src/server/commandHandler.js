@@ -1,4 +1,5 @@
-import { repeatedPrompt } from '../shared/utils.js';
+//** */ server process.stdin command handler
+import { repeatedPrompt } from "../shared/utils.js";
 
 export class CommandHandler {
   constructor(clientManager, banManager) {
@@ -18,12 +19,17 @@ export class CommandHandler {
         return;
       }
       this.isAwaitingPrompt = true;
-      repeatedPrompt("📢 Are you sure you want to broadcast this message? (y/n): ", () => {
-        this.clientManager.broadcast(`${msg}\n`);
-        console.log(`📢 ${msg}\nMessage broadcasted to all clients.`);
+      repeatedPrompt(
+        "📢 Are you sure you want to broadcast this message? (y/n): ",
+        () => {
+          this.clientManager.broadcast(`${msg}\n`);
+          console.log(`📢 ${msg}\nMessage broadcasted to all clients.`);
+          this.isAwaitingPrompt = false;
+        },
+      );
+      setTimeout(() => {
         this.isAwaitingPrompt = false;
-      });
-      setTimeout(() => { this.isAwaitingPrompt = false; }, 100);
+      }, 100);
       return;
     }
 
@@ -49,7 +55,9 @@ export class CommandHandler {
     if (inputArr[0] === "-bf") {
       const flag = inputArr[1];
       if (!flag) {
-        console.log("❌ Please provide a flag for banfile. Eg: -bf list or -bf clear");
+        console.log(
+          "❌ Please provide a flag for banfile. Eg: -bf list or -bf clear",
+        );
         return;
       }
       if (flag === "list") {
@@ -66,12 +74,17 @@ export class CommandHandler {
     if (inputArr[0] === "-ban") {
       const cname = inputArr[1];
       if (!cname) {
-        console.log("❌ Please provide a client name to ban. Eg: -ban <clientname>");
+        console.log(
+          "❌ Please provide a client name to ban. Eg: -ban <clientname>",
+        );
         return;
       }
       const socket = this.clientManager.findClientByName(cname);
       if (socket) {
-        await this.banManager.banClient(socket, this.clientManager.getClientList());
+        await this.banManager.banClient(
+          socket,
+          this.clientManager.getClientList(),
+        );
       } else {
         console.log(`❌ Client ${cname} not found.`);
       }
@@ -94,7 +107,15 @@ exit                    Shutdown server
       return;
     }
 
-    console.log("❌ Invalid Command! Type -h or -help to see list of all commands.");
+    // Exit
+    if (input === "exit") {
+      console.log("🔌 Shutting down server...");
+      process.exit(0);
+    }
+
+    console.log(
+      "❌ Invalid Command! Type -h or -help to see list of all commands.",
+    );
   }
 
   isAwaiting() {
