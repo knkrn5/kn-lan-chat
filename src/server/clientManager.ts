@@ -1,9 +1,5 @@
 import { strgen } from "../shared/utils.js";
-import type { Socket } from "node:net";
-
-type ClientSocket = Socket & {
-  clientName: string;
-};
+import type { ClientSocket } from "../types/types.js";
 
 export class ClientManager {
   private serverName: string;
@@ -14,32 +10,30 @@ export class ClientManager {
     this.clientList = [];
   }
 
-  addClient(socket) {
+  addClient(socket: ClientSocket) {
     this.clientList.push(socket);
   }
 
-  removeClient(socket) {
+  removeClient(socket: ClientSocket) {
     const index = this.clientList.indexOf(socket);
     if (index !== -1) {
       this.clientList.splice(index, 1);
     }
   }
 
-  findClientByName(clientName) {
+  findClientByName(clientName: string) {
     return this.clientList.find((socket) => socket.clientName === clientName);
   }
 
-  findClientByIndex(index) {
+  findClientByIndex(index: number) {
     return this.clientList[index];
   }
 
-  isNameTaken(clientName, excludeSocket = null) {
-    return this.clientList.some(
-      (socket) => socket.clientName === clientName && socket !== excludeSocket,
-    );
+  isNameTaken(clientName: string) {
+    return this.clientList.some((socket) => socket.clientName === clientName);
   }
 
-  broadcast(message, excludeSocket = null) {
+  broadcast(message: string, excludeSocket?: ClientSocket) {
     this.clientList.forEach((socket) => {
       if (socket !== excludeSocket && !socket.destroyed) {
         socket.write(message);
@@ -47,18 +41,28 @@ export class ClientManager {
     });
   }
 
-  sendToClient(clientName, message) {
-    const targetSocket = this.findClientByName(clientName);
+  sendToClient(clientIdentity: string | number, message: string) {
+    let targetSocket: ClientSocket | undefined;
+    let clientName: string | undefined;
+
+    if (typeof clientIdentity === "string") {
+      clientName = clientIdentity;
+      targetSocket = this.findClientByName(clientIdentity);
+    } else {
+      targetSocket = this.findClientByIndex(clientIdentity);
+      clientName = targetSocket?.clientName;
+    }
+
     if (targetSocket) {
       targetSocket.write(message);
-      console.log(`📤 Message sent to ${clientName}: ${message.trim()}`);
+      console.log(`Message sent to ${clientName}: ${message.trim()}`);
       return true;
-    } else {
-      console.log(
-        `❌ ${clientName} This client Name does not exist on this server.`,
-      );
-      return false;
     }
+
+    console.log(
+      `${clientName ?? clientIdentity} does not exist on this server.`,
+    );
+    return false;
   }
 
   showAllClients() {
@@ -76,16 +80,16 @@ export class ClientManager {
     console.log(`Total Clients: ${this.clientList.length}\n`);
   }
 
-  handleClientNameSet(socket, requestedName) {
+  handleClientNameSet(socket: ClientSocket, requestedName: string) {
     let clientName = requestedName;
 
     if (clientName === "null" || !clientName || clientName === "undefined") {
       clientName = strgen();
     }
 
-    if (this.isNameTaken(clientName, socket)) {
+    if (this.isNameTaken(clientName)) {
       socket.write(
-        `❌ Username '${clientName}' already exists. Please choose a different name.\n`,
+        `-err ❌ Username '${clientName}' already exists. Please choose a different name.\n`,
       );
       return false;
     }
@@ -98,7 +102,7 @@ export class ClientManager {
     return true;
   }
 
-  sendClientList(socket) {
+  sendClientList(socket: ClientSocket) {
     socket.write(`-cl 👥 Connected clients:\n`);
     this.clientList.forEach((s, i) => {
       const clientName = s.clientName || "Unknown";

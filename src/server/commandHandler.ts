@@ -4,7 +4,6 @@ import type { BanManager } from "./banManager.js";
 import type { ClientManager } from "./clientManager.js";
 
 export class CommandHandler {
-
   private clientManager: ClientManager;
   private banManager: BanManager;
   private isAwaitingPrompt: boolean;
@@ -15,8 +14,9 @@ export class CommandHandler {
     this.isAwaitingPrompt = false;
   }
 
-  async handleCommand(input) {
-    const inputArr = input.split(" ").filter(Boolean);
+  async handleCommand(input: string | Buffer) {
+    const inputStr = input.toString().trim();
+    const inputArr = inputStr.split(" ").filter(Boolean);
 
     // Broadcast message to all clients
     if (inputArr[0] === "-bc") {
@@ -41,20 +41,51 @@ export class CommandHandler {
     }
 
     // Show client list
-    if (input === "-cl") {
+    if (inputArr[0] === "-cl") {
       this.clientManager.showAllClients();
       return;
     }
 
-    // Send message to specific client
+    // Send message to specific client using username
     if (inputArr[0] === "-cname") {
       const clientname = inputArr[1];
+      if (!clientname) {
+        console.log(
+          "❌ Please provide a valid client name. Eg: -cname <clientname> <message>",
+        );
+        return;
+      }
       const msg = inputArr.slice(2).join(" ");
       if (!msg.trim()) {
         console.log("❌ Please provide a message to send.");
         return;
       }
       this.clientManager.sendToClient(clientname, `${msg}\n`);
+      return;
+    }
+
+    if (inputArr[0] === "-cnum") {
+      const clientIndexNum = inputArr[1];
+      if (!clientIndexNum || isNaN(Number(clientIndexNum))) {
+        console.log(
+          "❌ Please provide a valid client number. Eg: -cnum <clientnumber> <message>",
+        );
+        return;
+      }
+
+      const clientNum = Number(clientIndexNum);
+
+      if (clientNum < 0) {
+        console.log("❌ User number cannot be negative.\n");
+        return;
+      }
+
+      const msg = inputArr.slice(2).join(" ");
+      if (!msg.trim()) {
+        console.log("❌ Please provide a message to send.");
+        return;
+      }
+      this.clientManager.sendToClient(clientNum, `${msg}\n`);
       return;
     }
 
@@ -99,13 +130,13 @@ export class CommandHandler {
     }
 
     // Show help
-    if (input === "-h" || input === "-help") {
+    if (inputArr[0] === "-h" || inputArr[0] === "-help") {
       console.log(`
 📋 Server Commands:
 -bc <message>           Broadcast message to all clients
 -cname <client> <msg>   Send private message to specific client
 -cl                     Show list of all connected clients
--ban <client>           Ban client by name
+-ban <clientname>           Ban client by name
 -bf list                Show ban list
 -bf clear               Clear ban list
 exit                    Shutdown server

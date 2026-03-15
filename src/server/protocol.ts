@@ -1,12 +1,15 @@
 //** server socket.on('data') handler for processing client messages
-export class ProtocolHandler {
-  private clientManager;
+import { ClientManager } from "./clientManager.js";
+import type { ClientSocket } from "../types/types.js";
 
-  constructor(clientManager) {
+export class ProtocolHandler {
+  private clientManager: ClientManager;
+
+  constructor(clientManager: ClientManager) {
     this.clientManager = clientManager;
   }
 
-  handleClientMessage(socket, data) {
+  handleClientMessage(socket: ClientSocket, data: string | Buffer) {
     const dataStr = data.toString().trim();
     const dataArr = dataStr.split(" ").filter(Boolean);
 
@@ -15,13 +18,27 @@ export class ProtocolHandler {
     // Change client name
     if (dataArr[0] === "-ccn") {
       const requestedName = dataArr[1];
+      if (!requestedName) {
+        socket.write(
+          "❌ Please provide a valid client name. Eg: -ccn <clientname>\n",
+        );
+        return;
+      }
       this.clientManager.handleClientNameSet(socket, requestedName);
       return;
     }
 
     // Send message to specific client by number
     if (dataArr[0] === "-cnum") {
-      const usernumber = parseInt(dataArr[1], 10);
+      const clientIndexNum = dataArr[1];
+      if (!clientIndexNum) {
+        socket.write(
+          "❌ Please provide a valid client number. Eg: -cnum <clientnumber> <message>\n",
+        );
+        return;
+      }
+      const usernumber = parseInt(clientIndexNum, 10);
+      console.log("usernumbber", usernumber);
       const message = dataArr.slice(2).join(" ");
 
       if (isNaN(usernumber)) {
@@ -38,6 +55,12 @@ export class ProtocolHandler {
       }
 
       const targetSocket = this.clientManager.findClientByIndex(usernumber);
+
+      if (!targetSocket) {
+        socket.write("❌ Target client not found.\n");
+        return;
+      }
+
       targetSocket.write(`-cname ${socket.clientName} ${message.trim()}\n`);
       return;
     }

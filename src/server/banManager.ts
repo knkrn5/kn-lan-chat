@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import type { ClientSocket } from "../types/types.js";
 
 export class BanManager {
   private banList: string[];
@@ -19,15 +20,19 @@ export class BanManager {
     }
   }
 
-  async isBanned(ipAddress) {
+  async isBanned(ipAddress: string) {
     const fileBanList = await this.loadBanList();
     return this.banList.includes(ipAddress) || fileBanList.includes(ipAddress);
   }
 
-  async banClient(socket, clientList) {
-    if (!socket) return false;
+  async banClient(socket: ClientSocket, clientList: ClientSocket[]) {
+    const ip = socket.remoteAddress;
+    if (!ip) {
+      console.log("Client has no remoteAddress, cannot ban.");
+      return false;
+    }
 
-    this.banList.push(socket.remoteAddress);
+    this.banList.push(ip);
     try {
       await writeFile("banlist.txt", `${socket.remoteAddress}, `, {
         flag: "a",

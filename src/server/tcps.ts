@@ -19,8 +19,7 @@ export function startServer() {
   process.stdin.on("data", (data) => {
     if (commandHandler.isAwaiting()) return;
 
-    const input = data.toString().trim();
-    commandHandler.handleCommand(input);
+    commandHandler.handleCommand(data);
   });
 
   // Create TCP server
@@ -29,8 +28,14 @@ export function startServer() {
     const clientAddress = `${socket.remoteAddress}:${socket.remotePort}`;
     console.log(`🔗 New client connected: ${clientAddress}`);
 
+    const ip = socket.remoteAddress;
+    if (!ip) {
+      console.log("Client has no remoteAddress, cannot ban.");
+      return false;
+    }
+
     // Check if client is banned
-    if (await banManager.isBanned(socket.remoteAddress)) {
+    if (await banManager.isBanned(ip)) {
       socket.end("🚫 You are banned from this server");
       console.log(`🚫 Banned IP ${socket.remoteAddress} attempted to connect`);
       return;
@@ -62,9 +67,13 @@ export function startServer() {
 
   tcpServer.listen(serverPort, serverHostIp, () => {
     const addr = tcpServer.address();
-    console.log(
-      `🎯 ${serverName} TCP server listening on ${addr.address}:${addr.port}`,
-    );
+    if (typeof addr === "string") {
+      console.log(`🎯 ${serverName} TCP server listening on ${addr}`);
+    } else if (addr && typeof addr === "object") {
+      console.log(
+        `🎯 ${serverName} TCP server listening on ${addr.address}:${addr.port}`,
+      );
+    }
     console.log("💡 Type -h for help or start managing your server!\n");
   });
 

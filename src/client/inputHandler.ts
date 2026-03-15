@@ -1,35 +1,40 @@
 //** client's process.stdin handler */
-import { repeatedPrompt } from '../shared/utils.js';
+import { repeatedPrompt } from "../shared/utils.js";
+import type { Socket } from "node:net";
+
+
 
 export class InputHandler {
-
-
-  socket;
+  socket: Socket;
   private recipientName: string | null = null;
 
-  constructor(socket) {
+  constructor(socket: Socket) {
     this.socket = socket;
     this.recipientName = null;
   }
 
-  handleClientInput(data) {
-    const dataStr = data.toString().trim();
-    const dataArr = dataStr.split(" ").filter(Boolean);
+  handleClientInput(input: string | Buffer) {
+    const inputStr = input.toString().trim();
+    const inputArr = inputStr.split(" ").filter(Boolean);
 
     // Remove recipient
-    if (dataArr[0] === "-rm") {
+    if (inputArr[0] === "-rm") {
       this.recipientName = null;
-      console.log("🔄 Recipient removed. Messages will now be treated as commands.");
+      console.log(
+        "🔄 Recipient removed. Messages will now be treated as commands.",
+      );
       return;
     }
 
     // Set recipient
-    if (dataArr[0] === "-cname") {
-      const newRecipient = dataArr[1]?.trim();
-      const message = dataArr.slice(2).join(" ");
+    if (inputArr[0] === "-cname") {
+      const newRecipient = inputArr[1]?.trim();
+      const message = inputArr.slice(2).join(" ");
 
       if (!newRecipient) {
-        console.log("❌ Please provide a valid client name. Eg: -cname <clientname> [message]");
+        console.log(
+          "❌ Please provide a valid client name. Eg: -cname <clientname> [message]",
+        );
         return;
       }
 
@@ -37,36 +42,41 @@ export class InputHandler {
 
       if (message.trim()) {
         console.log(`📤 To ${this.recipientName}: ${message}`);
-        this.socket.write(dataStr);
+        this.socket.write(inputStr);
       } else {
-        console.log(`💬 Recipient set to ${this.recipientName}. Type your message:`);
+        console.log(
+          `💬 Recipient set to ${this.recipientName}. Type your message:`,
+        );
       }
       return;
     }
 
     // If we have a recipient and this isn't a command, send to recipient
-    if (this.recipientName && !dataStr.startsWith("-")) {
-      console.log(`📤 To ${this.recipientName}: ${dataStr}`);
-      this.socket.write(`-cname ${this.recipientName} ${dataStr}`);
+    if (this.recipientName && !inputStr.startsWith("-")) {
+      console.log(`📤 To ${this.recipientName}: ${inputStr}`);
+      this.socket.write(`-cname ${this.recipientName} ${inputStr}`);
       return;
     }
 
     // Broadcast message
-    if (dataArr[0] === "-bc") {
-      const message = dataArr.slice(1).join(" ");
+    if (inputArr[0] === "-bc") {
+      const message = inputArr.slice(1).join(" ");
       if (!message.trim()) {
         console.log("❌ Please provide a message to broadcast.");
         return;
       }
-      repeatedPrompt("📢 Are you sure you want to broadcast this message? (y/n): ", () => {
-        this.socket.write(dataStr);
-        console.log("✅ Broadcast sent!");
-      });
+      repeatedPrompt(
+        "📢 Are you sure you want to broadcast this message? (y/n): ",
+        () => {
+          this.socket.write(inputStr);
+          console.log("✅ Broadcast sent!");
+        },
+      );
       return;
     }
 
     // Show help
-    if (dataStr === "-h" || dataStr === "-help") {
+    if (inputStr === "-h" || inputStr === "-help") {
       console.log(`
 📋 Available Commands:
 -ccn <name>             Set your client name
@@ -89,18 +99,20 @@ exit                    Disconnect from server
     }
 
     // Exit
-    if (dataStr === "exit") {
+    if (inputStr === "exit") {
       console.log("👋 Disconnecting from server...");
       this.socket.end();
       return;
     }
 
     // Send command/message to server
-    this.socket.write(dataStr);
+    this.socket.write(inputStr);
   }
 
   setupInputHandling() {
-    process.stdin.on("data", (data) => this.handleClientInput(data));
+    process.stdin.on("data", (data) => {
+      this.handleClientInput(data);
+    });
 
     // Handle Ctrl+C gracefully
     process.on("SIGINT", () => {
