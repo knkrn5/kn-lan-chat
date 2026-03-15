@@ -1,19 +1,24 @@
 {
   "name": "kn-lan-chat",
   "version": "0.0.1",
-  "description": "A CLI application for TCP chat server and client",
+  "description": "TCP LAN chat CLI for server/client messaging with private chat, broadcast, and IP ban management",
   "type": "module",
   "bin": {
-    "klcs": "./dist/server/tcps.js",
-    "klcc": "./dist/client/tcpc.js"
+    "klcs": "dist/server/tcps.js",
+    "klcc": "dist/client/tcpc.js"
   },
+  "main": "dist/server/tcps.js",
   "files": [
     "dist/**/*.js"
   ],
   "scripts": {
-    "server": "tsx ./src/server/tcps.js",
-    "client": "tsx ./src/client/tcpc.js",
-    "build": "tsc"
+    "clean": "node -e \"const fs=require('node:fs');fs.rmSync('dist',{recursive:true,force:true});\"",
+    "server": "tsx ./src/server/tcps.ts",
+    "client": "tsx ./src/client/tcpc.ts",
+    "build": "npm run clean && tsc"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
@@ -22,9 +27,16 @@
   "keywords": [
     "tcp",
     "chat",
+    "lan",
     "cli",
     "server",
-    "client"
+    "client",
+    "messaging",
+    "socket",
+    "nodejs",
+    "terminal",
+    "private-message",
+    "broadcast"
   ],
   "author": "karan",
   "license": "MIT"
