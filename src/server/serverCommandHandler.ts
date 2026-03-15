@@ -1,9 +1,9 @@
-//**  server process.stdin command handler */
+//**  server process.stdin.on('data') command handler */
 import { repeatedPrompt } from "../shared/utils.js";
 import type { BanManager } from "./banManager.js";
 import type { ClientManager } from "./clientManager.js";
 
-export class CommandHandler {
+export class ServerCommandHandler {
   private clientManager: ClientManager;
   private banManager: BanManager;
   private isAwaitingPrompt: boolean;

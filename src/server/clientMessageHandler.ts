@@ -1,8 +1,8 @@
-//** server socket.on('data') handler for processing client messages
+//** server socket.on('data') handler for processing client messages */
 import { ClientManager } from "./clientManager.js";
 import type { ClientSocket } from "../types/types.js";
 
-export class ProtocolHandler {
+export class ClientMessageHandler {
   private clientManager: ClientManager;
 
   constructor(clientManager: ClientManager) {

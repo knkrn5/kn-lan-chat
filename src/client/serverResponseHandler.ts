@@ -1,6 +1,6 @@
 //** client socket.on('data') handler for processing server messages
-export class MessageHandler {
-  handleServerMessage(data: string | Buffer) {
+export class ServerResponseHandler {
+  handleServerResponse(data: string | Buffer) {
     const dataStr = data.toString().trim();
     const dataArr = dataStr.split(" ").filter(Boolean);
 

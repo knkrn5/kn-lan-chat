@@ -1,14 +1,14 @@
 import net from "node:net";
 import { parseClientConfig } from "../shared/config.js";
-import { MessageHandler } from "./messageHandler.js";
-import { InputHandler } from "./inputHandler.js";
+import { ServerResponseHandler } from "./serverResponseHandler.js";
+import { ClientCommandHandler } from "./clientCommandHandler.js";
 
 export function startClient() {
   console.log("🚀 TCP Chat Client Starting...\n");
 
   const { serverPort, serverIp, clientName } = parseClientConfig();
-  const messageHandler = new MessageHandler();
-  let inputHandler;
+  const serverResponseHandler = new ServerResponseHandler();
+  let clientCommandHandler;
 
   const socket = net.createConnection(serverPort, serverIp, () => {
     console.log(
@@ -24,12 +24,12 @@ export function startClient() {
     console.log("💡 Type -h for help or start chatting!\n");
 
     // Setup input handling after connection
-    inputHandler = new InputHandler(socket);
-    inputHandler.setupInputHandling();
+    clientCommandHandler = new ClientCommandHandler(socket);
+    clientCommandHandler.setupCommandHandling();
   });
 
   socket.on("data", (data) => {
-    messageHandler.handleServerMessage(data);
+    serverResponseHandler.handleServerResponse(data);
   });
 
   socket.on("error", (err) => {
@@ -53,7 +53,7 @@ export function startClient() {
   });
 
   socket.on("close", () => {
-    console.log("🔌 Disconnected from server. Goodbye!");
+    console.log("🔌 Host Disconnected from server. Goodbye!");
     process.exit(0);
   });
 }

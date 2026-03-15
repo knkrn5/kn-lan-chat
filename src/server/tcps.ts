@@ -2,8 +2,8 @@ import net from "node:net";
 import { parseServerConfig } from "../shared/config.js";
 import { ClientManager } from "./clientManager.js";
 import { BanManager } from "./banManager.js";
-import { ProtocolHandler } from "./protocol.js";
-import { CommandHandler } from "./commandHandler.js";
+import { ClientMessageHandler } from "./clientMessageHandler.js";
+import { ServerCommandHandler } from "./serverCommandHandler.js";
 
 export function startServer() {
   console.log("🚀 TCP Chat Server Starting...\n");
@@ -12,14 +12,14 @@ export function startServer() {
 
   const clientManager = new ClientManager(serverName);
   const banManager = new BanManager();
-  const protocolHandler = new ProtocolHandler(clientManager);
-  const commandHandler = new CommandHandler(clientManager, banManager);
+  const clientMessageHandler = new ClientMessageHandler(clientManager);
+  const serverCommandHandler = new ServerCommandHandler(clientManager, banManager);
 
   // Handle stdin commands
   process.stdin.on("data", (data) => {
-    if (commandHandler.isAwaiting()) return;
+    if (serverCommandHandler.isAwaiting()) return;
 
-    commandHandler.handleCommand(data);
+    serverCommandHandler.handleCommand(data);
   });
 
   // Create TCP server
@@ -42,7 +42,7 @@ export function startServer() {
     }
 
     socket.on("data", (data) => {
-      protocolHandler.handleClientMessage(socket, data);
+      clientMessageHandler.handleClientMessage(socket, data);
     });
 
     socket.on("error", (err) => {

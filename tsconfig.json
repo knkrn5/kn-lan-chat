@@ -41,7 +41,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "src/client/serverResponseHandler.ts"  ],
   "exclude": [
     "node_modules",
     "dist"

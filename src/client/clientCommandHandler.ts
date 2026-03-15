@@ -4,7 +4,7 @@ import type { Socket } from "node:net";
 
 
 
-export class InputHandler {
+export class ClientCommandHandler {
   socket: Socket;
   private recipientName: string | null = null;
 
@@ -13,7 +13,7 @@ export class InputHandler {
     this.recipientName = null;
   }
 
-  handleClientInput(input: string | Buffer) {
+  handleClientCommand(input: string | Buffer) {
     const inputStr = input.toString().trim();
     const inputArr = inputStr.split(" ").filter(Boolean);
 
@@ -109,9 +109,9 @@ exit                    Disconnect from server
     this.socket.write(inputStr);
   }
 
-  setupInputHandling() {
+  setupCommandHandling() {
     process.stdin.on("data", (data) => {
-      this.handleClientInput(data);
+      this.handleClientCommand(data);
     });
 
     // Handle Ctrl+C gracefully
