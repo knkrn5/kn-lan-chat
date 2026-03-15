@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import net from "node:net";
 import { parseClientConfig } from "../shared/config.js";
 import { ServerResponseHandler } from "./serverResponseHandler.js";

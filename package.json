@@ -1,6 +1,6 @@
 {
   "name": "kn-lan-chat",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TCP LAN chat CLI for server/client messaging with private chat, broadcast, and IP ban management",
   "type": "module",
   "bin": {
@@ -38,6 +38,16 @@
     "private-message",
     "broadcast"
   ],
-  "author": "karan",
+  "author": {
+    "name": "knkrn5"
+  },
+  "homepage": "https://github.com/knkrn5/kn-lan-chat#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knkrn5/kn-lan-chat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/knkrn5/kn-lan-chat/issues"
+  },
   "license": "MIT"
 }

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import net from "node:net";
 import { parseServerConfig } from "../shared/config.js";
 import { ClientManager } from "./clientManager.js";
