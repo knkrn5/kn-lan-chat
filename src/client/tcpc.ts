@@ -16,11 +16,12 @@ export function startClient() {
       `✅ Connected to server! ${socket.remoteAddress}:${socket.remotePort}`,
     );
 
-    socket.write(`-ccn ${clientName}`);
     if (clientName) {
       console.log(`👤 Joining as: ${clientName}`);
+      socket.write(`-ccn ${clientName}`);
     } else {
       console.log("👤 Server will assign a random username");
+      socket.write(`-ccn null`);
     }
     console.log("💡 Type -h for help or start chatting!\n");
 

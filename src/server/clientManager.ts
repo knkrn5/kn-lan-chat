@@ -83,7 +83,7 @@ export class ClientManager {
   handleClientNameSet(socket: ClientSocket, requestedName: string) {
     let clientName = requestedName;
 
-    if (clientName === "null" || !clientName || clientName === "undefined") {
+    if (clientName === "null" || !clientName) {
       clientName = strgen();
     }
 
