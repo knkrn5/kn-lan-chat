@@ -1,16 +1,20 @@
 import { readFile, writeFile } from "node:fs/promises";
 import type { ClientSocket } from "../types/types.js";
+import { createSourceCodeApath } from "../shared/utils.js";
+
 
 export class BanManager {
   private banList: string[];
+  private banFilePath: string;
 
   constructor() {
     this.banList = [];
+    this.banFilePath = createSourceCodeApath('../', 'data', 'banlist.txt')
   }
 
   async loadBanList() {
     try {
-      const banListFile = await readFile("banlist.txt", {
+      const banListFile = await readFile(this.banFilePath, {
         encoding: "utf-8",
         flag: "r",
       });
@@ -34,7 +38,7 @@ export class BanManager {
 
     this.banList.push(ip);
     try {
-      await writeFile("banlist.txt", `${socket.remoteAddress}, `, {
+      await writeFile(this.banFilePath, `${socket.remoteAddress}, `, {
         flag: "a",
       });
 
@@ -59,7 +63,7 @@ export class BanManager {
 
   async showBanList() {
     try {
-      const banListFile = await readFile("banlist.txt", {
+      const banListFile = await readFile(this.banFilePath, {
         encoding: "utf-8",
         flag: "r",
       });
@@ -81,7 +85,7 @@ export class BanManager {
 
   async clearBanList() {
     try {
-      await writeFile("banlist.txt", "", {
+      await writeFile(this.banFilePath, "", {
         flag: "w",
       });
       this.banList = [];

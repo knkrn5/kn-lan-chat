@@ -109,6 +109,8 @@ exit                    Disconnect from server
     this.socket.write(inputStr);
   }
 
+
+  // command on process
   setupCommandHandling() {
     process.stdin.on("data", (data) => {
       this.handleClientCommand(data);
