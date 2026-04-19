@@ -1,6 +1,6 @@
 # TCP LAN Chat CLI App
 
-[![npm version](https://img.shields.io/npm/v/kn-lan-share.svg)](https://www.npmjs.com/package/kn-lan-chat)
+[![npm version](https://img.shields.io/npm/v/kn-lan-chat.svg)](https://www.npmjs.com/package/kn-lan-chat)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 A TypeScript + Node.js TCP chat application with a server CLI and client CLI.
